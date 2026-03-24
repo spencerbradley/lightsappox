@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active – Lights App</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+  </nav>
+  <main class="main-active">
+    <section class="section">
+      <h1>Active</h1>
+
+      <div class="active-page-audio" id="active-page-audio" title="Click to start beat detection">
+        <div id="change-indicator" class="change-indicator change-indicator-line" role="status" aria-label="Beat indicator"></div>
+        <p id="mic-status" class="active-page-mic-status" aria-live="polite"></p>
+      </div>
+
+      <div id="manual-devices" class="manual-devices"></div>
+
+      <h2 class="section-sub">Scenes</h2>
+      <p class="placeholder-note">Click a scene to apply it. Presets cycle on each detected beat.</p>
+      <div id="scene-boxes" class="scene-boxes scene-boxes-full"></div>
+      <p id="active-status" class="placeholder-note"></p>
+
+      <a href="../index.html" class="back-link">Back to home</a>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/home.js"></script>
+  <script src="../js/active.js"></script>
+</body>
+</html>

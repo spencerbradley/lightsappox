@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presets – Lights App</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+  </nav>
+  <main>
+    <section class="section">
+      <h1>Presets</h1>
+      <p class="placeholder-note">Combine device presets and a LedFx scene into one preset. Apply to run all at once.</p>
+
+      <div class="card">
+        <h2 id="preset-form-title">New preset</h2>
+        <form id="preset-form" class="preset-form">
+          <div class="form-group">
+            <label for="preset-name">Name</label>
+            <input type="text" id="preset-name" placeholder="e.g. Chill vibes" required>
+          </div>
+          <div id="device-presets-fields"></div>
+          <div class="form-group">
+            <label for="ledfx-preset">LedFx scene</label>
+            <select id="ledfx-preset" aria-label="LedFx scene">
+              <option value="">— None —</option>
+            </select>
+          </div>
+          <div class="flex gap-md">
+            <button type="submit" class="btn btn-primary">Save preset</button>
+            <button type="button" id="btn-cancel-edit" class="btn btn-secondary" style="display: none;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Saved presets</h2>
+        <p id="presets-status" class="placeholder-note">Loading…</p>
+        <div id="preset-list"></div>
+      </div>
+
+      <a href="../index.html" class="back-link">Back to home</a>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/presets.js"></script>
+</body>
+</html>

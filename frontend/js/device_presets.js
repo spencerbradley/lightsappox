@@ -801,10 +801,15 @@
     if (!select) return;
     API.get("/devices")
       .then(function (devices) {
+        console.log("[DevicePresets] Loaded devices:", devices);
         const supportedIds = Object.keys(MODE_VALUES);
+        console.log("[DevicePresets] Supported device IDs:", supportedIds);
         const usable = (devices || []).filter(function (d) {
-          return supportedIds.includes(d.id);
+          const isSupported = supportedIds.includes(d.id);
+          console.log(`[DevicePresets] Device ${d.id}: supported=${isSupported}`);
+          return isSupported;
         });
+        console.log("[DevicePresets] Usable devices:", usable);
         usable.sort(function (a, b) {
           return (a.order || 0) - (b.order || 0);
         });
@@ -815,11 +820,14 @@
           select.appendChild(opt);
         });
         if (usable.length === 0 && status) {
-          status.textContent = "No supported scene-based devices found.";
+          const allDeviceIds = (devices || []).map(function (d) { return d.id; });
+          status.textContent = `No supported devices found. Available: ${allDeviceIds.join(", ") || "none"}. Supported: ${supportedIds.join(", ")}`;
+        } else if (status && usable.length > 0) {
+          status.textContent = "";
         }
       })
       .catch(function (err) {
-        console.error("Failed to load devices", err);
+        console.error("[DevicePresets] Failed to load devices", err);
         if (status) status.textContent = "Failed to load devices: " + err.message;
       });
 
@@ -829,6 +837,15 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    // Ensure API is loaded before using it
+    if (typeof window.API === "undefined") {
+      console.error("API not loaded - ensure api.js is included before device_presets.js");
+      const status = document.getElementById("device-presets-status");
+      if (status) {
+        status.textContent = "Error: API client not loaded. Check console for details.";
+      }
+      return;
+    }
     populateDevicesDropdown();
   });
 })();

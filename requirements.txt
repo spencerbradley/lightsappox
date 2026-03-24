@@ -1,0 +1,20 @@
+#e131 sending
+sacn
+
+#models
+pydantic
+typing
+
+#ledfx
+urllib3
+requests
+typing
+
+#server
+uvicorn
+fastapi
+
+#ai_mode
+stable-baselines3>=2.0.0
+gymnasium>=0.29.0
+numpy>=1.24.0

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device presets – Lights App</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+  </nav>
+  <main class="main-wide">
+    <section class="section">
+      <h1>Device presets</h1>
+      <div class="card">
+        <div class="form-group">
+          <label for="device-select">Device</label>
+          <select id="device-select" aria-label="Select device">
+            <option value="">— Select a device —</option>
+          </select>
+        </div>
+      </div>
+      <div id="device-builder-root" class="device-builder-root" style="display: none;"></div>
+      <p id="device-presets-status" class="placeholder-note">Select a device to edit and save presets.</p>
+      <a href="../index.html" class="back-link">Back to home</a>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/device_presets.js"></script>
+</body>
+</html>

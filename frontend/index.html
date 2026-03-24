@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lights App</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="section">
+      <h1>About</h1>
+      <p>This app lets you control DMX and LED effects for your lighting setup.</p>
+      <p>Use the audio section below to choose a microphone and see input levels; device presets, presets, and scenes are available from the links.</p>
+    </section>
+
+    <section class="section">
+      <h2>Audio settings</h2>
+      <div class="card">
+        <div class="form-group">
+          <label for="mic-select">Microphone</label>
+          <select id="mic-select" aria-label="Select microphone">
+            <option value="">— Select a device —</option>
+          </select>
+        </div>
+        <p id="mic-status" class="placeholder-note">Requesting microphone access…</p>
+        <div class="audio-block form-group">
+          <label for="level-meter">Level</label>
+          <div id="level-meter" class="meter-wrap" role="meter" aria-label="Microphone level">
+            <div id="meter-bar" class="meter-bar"></div>
+          </div>
+        </div>
+        <div class="audio-block change-indicator-wrap">
+          <span class="change-label">Change</span>
+          <div id="change-indicator" class="change-indicator" role="status" aria-label="Audio change indicator"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Links</h2>
+      <ul class="link-list">
+        <li><a href="html/device_presets.html">Device presets</a></li>
+        <li><a href="html/presets.html">Presets</a></li>
+        <li><a href="html/scenes.html">Scenes</a></li>
+        <li><a href="html/active.html">Active</a></li>
+      </ul>
+    </section>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

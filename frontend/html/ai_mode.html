@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Mode – Lights App</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+  </nav>
+  <main class="main-active">
+    <section class="section">
+      <h1>AI Mode</h1>
+      <p class="placeholder-note">AI Mode uses reinforcement learning to automatically control lights based on audio analysis.</p>
+
+      <!-- AI Mode Toggle -->
+      <div class="card">
+        <div class="form-group">
+          <button type="button" id="ai-mode-toggle" class="button button-primary" aria-label="Toggle AI mode">
+            <span id="toggle-text">Start AI Mode</span>
+          </button>
+          <p id="ai-mode-status" class="placeholder-note" aria-live="polite">AI Mode is inactive</p>
+        </div>
+      </div>
+
+      <!-- Audio Visualization -->
+      <div class="card" id="audio-section">
+        <h2 class="section-sub">Audio Input</h2>
+        <div class="form-group">
+          <label for="mic-select">Microphone</label>
+          <select id="mic-select" aria-label="Select microphone">
+            <option value="">— Select a device —</option>
+          </select>
+        </div>
+        <p id="mic-status" class="placeholder-note" aria-live="polite">Requesting microphone access…</p>
+        <div class="audio-block form-group">
+          <label for="level-meter">Level</label>
+          <div id="level-meter" class="meter-wrap" role="meter" aria-label="Microphone level">
+            <div id="meter-bar" class="meter-bar"></div>
+          </div>
+        </div>
+        <div class="audio-block change-indicator-wrap">
+          <span class="change-label">Change</span>
+          <div id="change-indicator" class="change-indicator" role="status" aria-label="Audio change indicator"></div>
+        </div>
+      </div>
+
+      <!-- Feedback Section -->
+      <div class="card" id="feedback-section">
+        <h2 class="section-sub">Feedback</h2>
+        <p class="placeholder-note">Provide feedback to help the AI learn your preferences.</p>
+
+        <!-- Rating Slider -->
+        <div class="form-group">
+          <label for="rating-slider">Rating (1-10)</label>
+          <div class="rating-container">
+            <input type="range" id="rating-slider" min="1" max="10" value="5" step="1" aria-label="Rating slider">
+            <span id="rating-value" class="rating-value">5</span>
+          </div>
+        </div>
+
+        <!-- Text Input -->
+        <div class="form-group">
+          <label for="feedback-text">Text Feedback</label>
+          <input type="text" id="feedback-text" placeholder="e.g., 'more calm', 'faster', 'this was good'" aria-label="Text feedback">
+        </div>
+
+        <!-- Preset Buttons -->
+        <div class="form-group">
+          <label>Quick Actions</label>
+          <div class="button-group">
+            <button type="button" class="button button-secondary preset-button" data-preset="More Calm">More Calm</button>
+            <button type="button" class="button button-secondary preset-button" data-preset="More Energetic">More Energetic</button>
+            <button type="button" class="button button-secondary preset-button" data-preset="Faster">Faster</button>
+            <button type="button" class="button button-secondary preset-button" data-preset="Slower">Slower</button>
+          </div>
+        </div>
+
+        <!-- Submit Feedback Button -->
+        <div class="form-group">
+          <button type="button" id="submit-feedback" class="button button-primary">Submit Feedback</button>
+        </div>
+
+        <!-- Undo Button -->
+        <div class="form-group">
+          <button type="button" id="undo-button" class="button button-secondary">Undo Last Action</button>
+        </div>
+      </div>
+
+      <!-- Status Display -->
+      <div class="card" id="status-section">
+        <h2 class="section-sub">Status</h2>
+        <div id="status-info" class="placeholder-note">
+          <p>Model: <span id="model-status">Not loaded</span></p>
+          <p>Feedback Count: <span id="feedback-count">0</span></p>
+          <p>Pre-trained: <span id="pre-trained-status">No</span></p>
+        </div>
+      </div>
+
+      <a href="../index.html" class="back-link">Back to home</a>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/home.js"></script>
+  <script src="../js/ai_mode.js"></script>
+</body>
+</html>

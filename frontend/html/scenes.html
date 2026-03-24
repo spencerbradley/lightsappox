@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scenes – Lights App</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+  </nav>
+  <main>
+    <section class="section">
+      <h1>Scenes</h1>
+      <p class="placeholder-note">A scene is an ordered list of presets. Apply a scene to run its presets in order.</p>
+
+      <div class="card">
+        <h2 id="scene-form-title">New scene</h2>
+        <form id="scene-form" class="scene-form">
+          <div class="form-group">
+            <label for="scene-name">Name</label>
+            <input type="text" id="scene-name" placeholder="e.g. Show opener" required>
+          </div>
+          <div class="form-group">
+            <label>Presets (in order)</label>
+            <div id="scene-preset-list" class="scene-preset-list"></div>
+            <div class="flex gap-md mt-md">
+              <select id="add-preset-select" aria-label="Add preset">
+                <option value="">— Add preset —</option>
+              </select>
+              <button type="button" id="btn-add-preset" class="btn btn-secondary">Add</button>
+            </div>
+          </div>
+          <div class="flex gap-md">
+            <button type="submit" class="btn btn-primary">Save scene</button>
+            <button type="button" id="btn-cancel-edit" class="btn btn-secondary" style="display: none;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Saved scenes</h2>
+        <p id="scenes-status" class="placeholder-note">Loading…</p>
+        <div id="scene-list"></div>
+      </div>
+
+      <a href="../index.html" class="back-link">Back to home</a>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/scenes.js"></script>
+</body>
+</html>

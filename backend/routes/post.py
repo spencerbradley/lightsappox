@@ -27,21 +27,53 @@ def _apply_preset_by_id(preset_id: str) -> None:
     preset = next((p for p in presets if p.get_id() == preset_id), None)
     if not preset:
         raise HTTPException(status_code=404, detail=f"Preset not found: {preset_id}")
-    device_presets = preset.get_device_presets(get_device_presets_path())
     devices = load_devices()
-    for dp in device_presets:
-        for i, d in enumerate(devices):
-            if d.get_id() == dp.get_device():
-                devices[i] = d.model_copy(update={"active_channels": dp.get_channel_values()})
+    all_device_presets = load_device_presets()
+    # Preset form sends one chosen preset id per scene-based device, in device order.
+    # Apply by position so each device gets its chosen preset (avoids "blackout" overwriting "paruv" when both ids exist for different devices).
+    scene_based = [d for d in devices if (getattr(d, "control_type", "") or "").lower() != "manual"]
+    chosen_ids = getattr(preset, "device_presets", None) or []
+    # Normalize for matching: case-insensitive, strip whitespace
+    def norm(s: str) -> str:
+        return (s or "").strip().lower()
+    print(f"[Apply] preset {preset_id!r} device_presets={chosen_ids!r}, scene_based devices={[d.get_id() for d in scene_based]!r}, all_device_preset (device,id)={[(p.get_device(), p.get_id()) for p in all_device_presets]!r}")
+    updated_any = False
+    for i, d in enumerate(scene_based):
+        if i >= len(chosen_ids) or not (chosen_ids[i] and str(chosen_ids[i]).strip()):
+            print(f"[Apply] skip device index {i} (no chosen_id or empty)")
+            continue
+        preset_id_for_device = (chosen_ids[i] or "").strip()
+        device_id_norm = norm(d.get_id())
+        dp = next(
+            (p for p in all_device_presets if norm(p.get_device()) == device_id_norm and norm(p.get_id()) == norm(preset_id_for_device)),
+            None,
+        )
+        if not dp:
+            print(f"[Apply] no device preset found for device={d.get_id()!r} id={preset_id_for_device!r}")
+            continue
+        ch_vals = list(dp.get_channel_values())
+        for j, dev in enumerate(devices):
+            if norm(dev.get_id()) == device_id_norm:
+                devices[j] = dev.model_copy(update={"active_channels": ch_vals})
+                updated_any = True
+                print(f"[Apply] set device {d.get_id()!r} active_channels (len={len(ch_vals)})")
                 break
+    if not updated_any:
+        print("[Apply] WARNING: no devices were updated (check device_presets order and device preset ids)")
     save_devices(devices)
     if getattr(preset, "ledfx_setting", None) and preset.ledfx_setting.strip():
         try:
             from ledfx.client import LEDFXClient
             ledfx = LEDFXClient(str(get_data_dir() / "config.json"), port=8888)
-            ledfx.set_active_scene(preset.ledfx_setting.strip())
-        except Exception:
-            pass
+            scene_id = preset.ledfx_setting.strip()
+            print(f"[LedFx] Attempting to activate scene: {scene_id}")
+            ledfx.set_active_scene(scene_id)
+            print(f"[LedFx] Successfully activated scene: {scene_id}")
+        except Exception as e:
+            # Print error so it's visible in terminal
+            print(f"[LedFx] ERROR: Failed to set LedFx scene '{preset.ledfx_setting}': {e}")
+            import traceback
+            traceback.print_exc()
 
 
 # device-presets: create (upsert — update if same id+device exists)
@@ -97,6 +129,7 @@ def post_apply_device_preset(device_id: str, preset_id: str):
 
 @apply_router.post("/preset/{preset_id}")
 def post_apply_preset(preset_id: str):
+    print("[Apply] DEBUG: POST /api/apply/preset received — preset_id =", repr(preset_id))
     _apply_preset_by_id(preset_id)
     return {"status": "applied", "preset_id": preset_id}
 
@@ -129,9 +162,12 @@ def post_active_scene(body: dict):
 @active_scene_router.post("/advance")
 def post_active_scene_advance():
     """Apply the current preset in the active scene, then advance to the next (for next beat)."""
+    print("[Beat] Advance endpoint called")
     result = advance_and_apply(_apply_preset_by_id)
     if result is None:
+        print("[Beat] No active scene")
         return {"status": "no_active_scene"}
+    print(f"[Beat] Applied preset: {result.get('applied')} (index {result.get('index')})")
     return {"status": "applied", **result}
 
 
