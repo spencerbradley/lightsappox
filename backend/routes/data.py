@@ -5,6 +5,9 @@ from pathlib import Path
 from models.config import CONFIG
 from models.device import DMXDevice
 from models.device_presets import DEVICEPreset
+from models.fullscene import FullScene
+from models.ildaframe import IldaFrame
+from models.ildascene import IldaScene
 from models.preset import Preset
 from models.scene import Scene
 from models.storage import load_optional, load_optional_single, save, save_single
@@ -18,6 +21,9 @@ _DEVICES_FILE = _DATA_DIR / "devices.json"
 _DEVICE_PRESETS_FILE = _DATA_DIR / "device_presets.json"
 _PRESETS_FILE = _DATA_DIR / "presets.json"
 _SCENES_FILE = _DATA_DIR / "scenes.json"
+_ILDA_FRAMES_FILE = _DATA_DIR / "ilda_frames.json"
+_ILDA_SCENES_FILE = _DATA_DIR / "ilda_scenes.json"
+_FULL_SCENES_FILE = _DATA_DIR / "full_scenes.json"
 
 
 def load_config() -> CONFIG | None:
@@ -163,6 +169,36 @@ def load_scenes() -> list[Scene]:
 
 def save_scenes(scenes: list[Scene]) -> None:
     save(str(_SCENES_FILE), scenes)
+
+
+def load_ilda_frames() -> list[IldaFrame]:
+    return load_optional(str(_ILDA_FRAMES_FILE), IldaFrame)
+
+
+def save_ilda_frames(frames: list[IldaFrame]) -> None:
+    save(str(_ILDA_FRAMES_FILE), frames)
+
+
+def load_ilda_scenes() -> list[IldaScene]:
+    return load_optional(str(_ILDA_SCENES_FILE), IldaScene)
+
+
+def save_ilda_scenes(scenes: list[IldaScene]) -> None:
+    save(str(_ILDA_SCENES_FILE), scenes)
+
+
+def load_full_scenes() -> list[FullScene]:
+    return load_optional(str(_FULL_SCENES_FILE), FullScene)
+
+
+def save_full_scenes(scenes: list[FullScene]) -> None:
+    save(str(_FULL_SCENES_FILE), scenes)
+
+
+def get_ilda_scene_by_id(scene_id: str) -> IldaScene | None:
+    if not scene_id:
+        return None
+    return next((s for s in load_ilda_scenes() if s.id == scene_id), None)
 
 
 def get_data_dir() -> Path:

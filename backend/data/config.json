@@ -1,0 +1,11 @@
+{
+  "id": "config1",
+  "total_channels": 512,
+  "IP": "127.0.0.1",
+  "sacn_port": 5568,
+  "priority": 100,
+  "universe": 1,
+  "server_host": "127.0.0.1",
+  "server_port": 8000,
+  "ai_mode_enabled": false
+}

@@ -15,16 +15,18 @@ from dmx.sender import SENDER
 import sacn
 
 # Import early to init local data dir (avoids cloud sync wiping devices when wifi changes)
-from routes.data import get_data_dir
+from paths import ensure_data_initialized, get_data_dir
 
 if getattr(sys, "frozen", False):
     _BASE_DIR = Path(sys.executable).parent
     _FRONTEND_DIR = _BASE_DIR / "frontend"
+    _SEED_DATA_DIR = _BASE_DIR / "data"
 else:
     _BASE_DIR = Path(__file__).resolve().parent.parent
     _FRONTEND_DIR = _BASE_DIR / "frontend"
+    _SEED_DATA_DIR = _BASE_DIR / "backend" / "data"
 
-_DATA_DIR = get_data_dir()
+_DATA_DIR = ensure_data_initialized(_SEED_DATA_DIR if _SEED_DATA_DIR.is_dir() else None)
 print(f"[Main] Data dir: {_DATA_DIR}")
 print("[Main] Creating DMX sender...")
 sender = SENDER(str(_DATA_DIR / "config.json"))

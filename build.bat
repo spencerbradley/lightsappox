@@ -5,11 +5,16 @@ echo Building LightsApp Executable
 echo ========================================
 echo.
 
+set "PY="
+if exist ".venv\Scripts\python.exe" set "PY=.venv\Scripts\python.exe"
+if not defined PY if exist "venv\Scripts\python.exe" set "PY=venv\Scripts\python.exe"
+if not defined PY set "PY=py -3.12"
+
 REM Check if PyInstaller is installed
-python -c "import PyInstaller" 2>nul
+%PY% -c "import PyInstaller" 2>nul
 if errorlevel 1 (
     echo PyInstaller not found. Installing...
-    pip install pyinstaller
+    %PY% -m pip install pyinstaller
     if errorlevel 1 (
         echo Failed to install PyInstaller. Please install manually: pip install pyinstaller
         pause
@@ -22,7 +27,7 @@ echo Starting build process...
 echo.
 
 REM Run the build script
-python build_exe.py
+%PY% build_exe.py
 
 if errorlevel 1 (
     echo.

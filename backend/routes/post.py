@@ -4,20 +4,31 @@ from fastapi import APIRouter, HTTPException
 from models.device_presets import DEVICEPreset
 from models.preset import Preset
 from models.scene import Scene
-from routes.active_scene import advance_and_apply, clear_scene, get_state, set_scene
+from models.fullscene import FullScene
+from models.ildaframe import IldaFrame
+from models.ildascene import IldaScene
+from routes.active_scene import advance_and_apply, clear_scene, get_state
+from routes.apply_full_scene import apply_full_scene_by_id
 from routes.data import (
     get_data_dir,
     get_device_presets_path,
     get_presets_path,
     load_device_presets,
     load_devices,
+    load_full_scenes,
+    load_ilda_frames,
+    load_ilda_scenes,
     load_presets,
     load_scenes,
     save_devices,
     save_device_presets,
+    save_full_scenes,
+    save_ilda_frames,
+    save_ilda_scenes,
     save_presets,
     save_scenes,
 )
+from ilda.player import PLAYER
 
 router = APIRouter(tags=["post"])
 
@@ -111,6 +122,46 @@ def post_scene(scene: Scene):
     return scene
 router.include_router(scenes_router)
 
+# ilda frames
+ilda_frames_router = APIRouter(prefix="/ilda-frames")
+@ilda_frames_router.post("")
+def post_ilda_frame(frame: IldaFrame):
+    frames = load_ilda_frames()
+    for i, f in enumerate(frames):
+        if f.id == frame.id:
+            frames[i] = frame
+            save_ilda_frames(frames)
+            return frame
+    frames.append(frame)
+    save_ilda_frames(frames)
+    return frame
+router.include_router(ilda_frames_router)
+
+# ilda scenes
+ilda_scenes_router = APIRouter(prefix="/ilda-scenes")
+@ilda_scenes_router.post("")
+def post_ilda_scene(scene: IldaScene):
+    scenes = load_ilda_scenes()
+    for i, s in enumerate(scenes):
+        if s.id == scene.id:
+            scenes[i] = scene
+            save_ilda_scenes(scenes)
+            return scene
+    scenes.append(scene)
+    save_ilda_scenes(scenes)
+    return scene
+router.include_router(ilda_scenes_router)
+
+# full scenes
+full_scenes_router = APIRouter(prefix="/full-scenes")
+@full_scenes_router.post("")
+def post_full_scene(full_scene: FullScene):
+    scenes = load_full_scenes()
+    scenes.append(full_scene)
+    save_full_scenes(scenes)
+    return full_scene
+router.include_router(full_scenes_router)
+
 # apply
 apply_router = APIRouter(prefix="/apply")
 @apply_router.post("/device-preset/{device_id}/{preset_id}")
@@ -135,27 +186,34 @@ def post_apply_preset(preset_id: str):
 
 @apply_router.post("/scene/{scene_id}")
 def post_apply_scene(scene_id: str):
-    """Set this scene as the active scene. It will cycle presets on each beat (advance)."""
+    """Apply combined scene only (DMX/LedFx), without ILDA."""
     scenes = load_scenes()
     scene = next((s for s in scenes if s.id == scene_id), None)
     if not scene:
         raise HTTPException(status_code=404, detail="Scene not found")
     preset_ids = getattr(scene, "preset_ids", None) or []
-    set_scene(scene_id, preset_ids)
+    set_full_scene(scene_id, scene_id, preset_ids, None)
+    PLAYER.stop()
     if preset_ids:
         _apply_preset_by_id(preset_ids[0])
     return {"status": "active", "scene_id": scene_id, "preset_ids": preset_ids}
+
+
+@apply_router.post("/full-scene/{full_scene_id}")
+def post_apply_full_scene(full_scene_id: str):
+    """Set active full scene: combined presets + ILDA on beat."""
+    return apply_full_scene_by_id(full_scene_id, _apply_preset_by_id)
 
 
 # active-scene: set/clear and advance (called on each beat from frontend)
 active_scene_router = APIRouter(prefix="/active-scene")
 @active_scene_router.post("")
 def post_active_scene(body: dict):
-    """Set or clear the active scene. Body: { scene_id, preset_ids } or { scene_id: null } to clear."""
-    if body.get("scene_id") is None or not body.get("preset_ids"):
+    """Set or clear active full scene. Body: { full_scene_id } or null to clear."""
+    if not body.get("full_scene_id"):
         clear_scene()
         return get_state()
-    set_scene(body["scene_id"], body.get("preset_ids", []))
+    apply_full_scene_by_id(body["full_scene_id"], _apply_preset_by_id)
     return get_state()
 
 

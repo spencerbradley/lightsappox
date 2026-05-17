@@ -7,6 +7,9 @@ from routes.data import (
     load_config,
     load_device_presets,
     load_devices,
+    load_full_scenes,
+    load_ilda_frames,
+    load_ilda_scenes,
     load_presets,
     load_scenes,
 )
@@ -75,6 +78,41 @@ def get_scene(scene_id: str):
             return s
     raise HTTPException(status_code=404, detail="Scene not found")
 router.include_router(scenes_router)
+
+# ilda frames
+ilda_frames_router = APIRouter(prefix="/ilda-frames")
+@ilda_frames_router.get("")
+def get_ilda_frames():
+    return load_ilda_frames()
+router.include_router(ilda_frames_router)
+
+# ilda scenes
+ilda_scenes_router = APIRouter(prefix="/ilda-scenes")
+@ilda_scenes_router.get("")
+def get_ilda_scenes():
+    return load_ilda_scenes()
+@ilda_scenes_router.get("/{scene_id}")
+def get_ilda_scene(scene_id: str):
+    scenes = load_ilda_scenes()
+    for s in scenes:
+        if s.id == scene_id:
+            return s
+    raise HTTPException(status_code=404, detail="ILDA scene not found")
+router.include_router(ilda_scenes_router)
+
+# full scenes
+full_scenes_router = APIRouter(prefix="/full-scenes")
+@full_scenes_router.get("")
+def get_full_scenes():
+    return load_full_scenes()
+@full_scenes_router.get("/{full_scene_id}")
+def get_full_scene(full_scene_id: str):
+    scenes = load_full_scenes()
+    for s in scenes:
+        if s.id == full_scene_id:
+            return s
+    raise HTTPException(status_code=404, detail="Full scene not found")
+router.include_router(full_scenes_router)
 
 # ledfx (optional - returns empty when offline, zero wifi dependence)
 ledfx_router = APIRouter(prefix="/ledfx")

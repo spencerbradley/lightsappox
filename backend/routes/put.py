@@ -5,17 +5,26 @@ from models.config import CONFIG
 from models.device import DMXDevice
 from models.device_presets import DEVICEPreset
 from models.preset import Preset
+from models.fullscene import FullScene
+from models.ildaframe import IldaFrame
+from models.ildascene import IldaScene
 from models.scene import Scene
 from routes.data import (
     get_data_dir,
     load_config,
     load_device_presets,
     load_devices,
+    load_full_scenes,
+    load_ilda_frames,
+    load_ilda_scenes,
     load_presets,
     load_scenes,
     save_config,
     save_device_presets,
     save_devices,
+    save_full_scenes,
+    save_ilda_frames,
+    save_ilda_scenes,
     save_presets,
     save_scenes,
 )
@@ -108,6 +117,59 @@ def put_scene(scene_id: str, scene: Scene):
             return scene
     raise HTTPException(status_code=404, detail="Scene not found")
 router.include_router(scenes_router)
+
+# ilda frames
+ilda_frames_router = APIRouter(prefix="/ilda-frames")
+@ilda_frames_router.put("/{frame_id}")
+def put_ilda_frame(frame_id: str, frame: IldaFrame):
+    frames = load_ilda_frames()
+    for i, f in enumerate(frames):
+        if f.id == frame_id:
+            frames[i] = frame
+            save_ilda_frames(frames)
+            return frame
+    raise HTTPException(status_code=404, detail="ILDA frame not found")
+router.include_router(ilda_frames_router)
+
+# ilda scenes
+ilda_scenes_router = APIRouter(prefix="/ilda-scenes")
+@ilda_scenes_router.put("/{scene_id}")
+def put_ilda_scene(scene_id: str, scene: IldaScene):
+    scenes = load_ilda_scenes()
+    for i, s in enumerate(scenes):
+        if s.id == scene_id:
+            scenes[i] = scene
+            save_ilda_scenes(scenes)
+            return scene
+    raise HTTPException(status_code=404, detail="ILDA scene not found")
+router.include_router(ilda_scenes_router)
+
+# full scenes
+full_scenes_router = APIRouter(prefix="/full-scenes")
+
+@full_scenes_router.put("/reorder")
+def put_full_scenes_reorder(body: dict):
+    scene_ids = body.get("scene_ids")
+    if not isinstance(scene_ids, list) or len(scene_ids) == 0:
+        raise HTTPException(status_code=400, detail="Body must contain 'scene_ids' (non-empty list)")
+    scenes = load_full_scenes()
+    id_to_scene = {s.id: s for s in scenes}
+    ordered = [id_to_scene[sid] for sid in scene_ids if sid in id_to_scene]
+    if len(ordered) != len(scenes):
+        raise HTTPException(status_code=400, detail="scene_ids must contain exactly the same full scene ids as existing")
+    save_full_scenes(ordered)
+    return {"scene_ids": [s.id for s in ordered]}
+
+@full_scenes_router.put("/{full_scene_id}")
+def put_full_scene(full_scene_id: str, full_scene: FullScene):
+    scenes = load_full_scenes()
+    for i, s in enumerate(scenes):
+        if s.id == full_scene_id:
+            scenes[i] = full_scene
+            save_full_scenes(scenes)
+            return full_scene
+    raise HTTPException(status_code=404, detail="Full scene not found")
+router.include_router(full_scenes_router)
 
 # ledfx (optional - fails silently when offline)
 ledfx_router = APIRouter(prefix="/ledfx")

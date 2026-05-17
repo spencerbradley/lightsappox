@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ILDA – Lights App</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav>
+    <a href="../index.html">Home</a>
+  </nav>
+  <main>
+    <section class="section">
+      <h1>ILDA</h1>
+      <p class="placeholder-note">Register .ild frame files, then build ILDA scenes (frame order, beat-synced or timed).</p>
+
+      <div class="card">
+        <h2>Frames</h2>
+        <form id="frame-form" class="preset-form">
+          <div class="form-group">
+            <label for="frame-id">Frame id</label>
+            <input type="text" id="frame-id" placeholder="e.g. spiral" required>
+          </div>
+          <div class="form-group">
+            <label for="frame-path">File path</label>
+            <input type="text" id="frame-path" placeholder="C:\path\to\frame.ild" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Save frame</button>
+        </form>
+        <p id="frames-status" class="placeholder-note"></p>
+        <div id="frame-list"></div>
+      </div>
+
+      <div class="card">
+        <h2 id="ilda-scene-form-title">New ILDA scene</h2>
+        <form id="ilda-scene-form" class="preset-form">
+          <div class="form-group">
+            <label for="ilda-scene-name">Name</label>
+            <input type="text" id="ilda-scene-name" placeholder="e.g. Laser show A" required>
+          </div>
+          <div class="form-group">
+            <label>Frames (in order)</label>
+            <div id="ilda-frame-order" class="scene-preset-list"></div>
+            <div class="flex gap-md mt-md">
+              <select id="add-frame-select" aria-label="Add frame">
+                <option value="">— Add frame —</option>
+              </select>
+              <button type="button" id="btn-add-frame" class="btn btn-secondary">Add</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="ilda-beat-synced" checked>
+              Beat synced (advance on mic beat)
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="ilda-time-step">Time step (seconds, if not beat synced)</label>
+            <input type="number" id="ilda-time-step" min="0.05" step="0.05" value="0.1">
+          </div>
+          <div class="flex gap-md">
+            <button type="submit" class="btn btn-primary">Save ILDA scene</button>
+            <button type="button" id="btn-cancel-ilda-edit" class="btn btn-secondary" style="display: none;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Saved ILDA scenes</h2>
+        <p id="ilda-scenes-status" class="placeholder-note">Loading…</p>
+        <div id="ilda-scene-list"></div>
+      </div>
+
+      <a href="../index.html" class="back-link">Back to home</a>
+    </section>
+  </main>
+  <script src="../js/api.js"></script>
+  <script src="../js/ilda.js"></script>
+</body>
+</html>

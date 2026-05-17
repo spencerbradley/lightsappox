@@ -147,7 +147,14 @@
     setStatus("");
     sceneListEl.innerHTML = scenes
       .map(function (s) {
-        var order = (s.preset_ids || []).join(" → ");
+        var order = (s.preset_ids || [])
+          .map(function (pid) {
+            var p = presets.find(function (x) {
+              return x.id === pid;
+            });
+            return pid;
+          })
+          .join(" → ");
         return (
           '<div class="scene-item" data-id="' +
           s.id +

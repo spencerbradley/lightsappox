@@ -18,7 +18,7 @@ class Preset(BaseModel):
         "example": {
             "id": "preset_1",
             "device_presets": ["Device1_Preset1", "Device2_Preset1"],
-            "ledfx_setting": "ledfx_setting_1"
+            "ledfx_setting": "ledfx_setting_1",
             }
         }
     }

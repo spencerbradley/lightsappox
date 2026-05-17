@@ -82,23 +82,23 @@
     });
   }
 
-  function applyScene(sceneId) {
+  function applyFullScene(fullSceneId) {
     setStatus("Applying…");
-    API.post("/apply/scene/" + encodeURIComponent(sceneId))
+    API.post("/apply/full-scene/" + encodeURIComponent(fullSceneId))
       .then(function () {
-        setStatus("Applied: " + sceneId);
-        setActiveIndicator(sceneId);
+        setStatus("Applied: " + fullSceneId);
+        setActiveIndicator(fullSceneId);
       })
       .catch(function (err) {
         setStatus("Failed: " + (err.message || "unknown"));
       });
   }
 
-  function setActiveIndicator(activeSceneId) {
+  function setActiveIndicator(activeFullSceneId) {
     if (!container) return;
     container.querySelectorAll(".scene-box").forEach(function (btn) {
       var id = btn.getAttribute("data-id");
-      btn.classList.toggle("active", id === activeSceneId);
+      btn.classList.toggle("active", id === activeFullSceneId);
     });
   }
 
@@ -109,7 +109,7 @@
     var tmp = swapped[index];
     swapped[index] = swapped[newIndex];
     swapped[newIndex] = tmp;
-    API.put("/scenes/reorder", { scene_ids: swapped })
+    API.put("/full-scenes/reorder", { scene_ids: swapped })
       .then(function () {
         renderScenes();
       })
@@ -119,12 +119,12 @@
   }
 
   function renderScenes() {
-    Promise.all([API.get("/scenes"), API.get("/active-scene"), API.get("/devices")])
+    Promise.all([API.get("/full-scenes"), API.get("/active-scene"), API.get("/devices")])
       .then(function (results) {
         var scenes = results[0];
         var activeState = results[1] || {};
         var devices = results[2] || [];
-        var activeSceneId = activeState.scene_id || null;
+        var activeSceneId = activeState.full_scene_id || null;
 
         renderManualDevices(devices);
 
@@ -132,7 +132,7 @@
         var list = scenes || [];
         if (list.length === 0) {
           container.innerHTML = "";
-          setStatus("No scenes saved yet.");
+          setStatus("No full scenes yet. Create them on the Full scenes page.");
           return;
         }
         setStatus("");
@@ -142,11 +142,12 @@
             var activeClass = s.id === activeSceneId ? " active" : "";
             var leftDisabled = idx === 0 ? " disabled" : "";
             var rightDisabled = idx === list.length - 1 ? " disabled" : "";
+            var sub = (s.scene_id || "") + (s.ilda_scene_id ? " · " + s.ilda_scene_id : "");
             return (
               '<div class="scene-box-wrap">' +
               '<button type="button" class="scene-box' + activeClass + '" data-id="' + s.id + '">' +
               '<span class="scene-box-arrow scene-box-arrow-left" data-index="' + idx + '" aria-label="Move left"' + leftDisabled + '>‹</span>' +
-              '<span class="scene-box-label">' + (s.id || "") + '</span>' +
+              '<span class="scene-box-label">' + (s.id || "") + '<span class="scene-box-sublabel">' + sub + '</span></span>' +
               '<span class="scene-box-arrow scene-box-arrow-right" data-index="' + idx + '" aria-label="Move right"' + rightDisabled + '>›</span>' +
               '</button>' +
               '</div>'
@@ -158,7 +159,7 @@
           var id = btn.getAttribute("data-id");
           btn.addEventListener("click", function (e) {
             if (e.target.classList.contains("scene-box-arrow")) return;
-            applyScene(id);
+            applyFullScene(id);
           });
         });
 
@@ -183,7 +184,7 @@
       })
       .catch(function (err) {
         if (container) container.innerHTML = "";
-        setStatus("Failed to load scenes: " + (err.message || "unknown"));
+        setStatus("Failed to load full scenes: " + (err.message || "unknown"));
       });
   }
 
